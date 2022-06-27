@@ -32,7 +32,7 @@ public class NetworkCoordinateClient : MonoBehaviour
         // Manage socket creation exceptions
         catch (Exception e)
         {
-            Debug.LogErrorFormat("Failed to establish connection to {0}:{1} with error: {1} ", m_ipAddress, m_Port, e.Message);
+            Debug.LogErrorFormat("Failed to establish connection to {0}:{1} with error: {2} ", m_ipAddress, m_Port, e.Message);
         }
     }
 
