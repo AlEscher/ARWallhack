@@ -23,6 +23,8 @@ public class NetworkCoordinateClient : MonoBehaviour
     int m_Port = 20042;
 
     private Socket m_Socket;
+    // Have to track connection separately since Socket::Connected does not work
+    private bool m_bConnected = false;
     private Dictionary<int, Vector3> m_Targets;
     private ReaderWriterLockSlim m_DictLock;
 
@@ -43,12 +45,13 @@ public class NetworkCoordinateClient : MonoBehaviour
 
             // Connect Socket to the remote endpoint
             m_Socket.Connect(serverEndPoint);
-            Debug.LogFormat("Socket connected to {0} ", m_Socket.RemoteEndPoint.ToString());
+            LogInfo("Socket connected to {0} ", m_Socket.RemoteEndPoint.ToString());
+            m_bConnected = true;
         }
         // Manage socket creation exceptions
         catch (Exception e)
         {
-            Debug.LogErrorFormat("Failed to establish connection to {0}:{1} with error: {2} ", m_ipAddress, m_Port, e.Message);
+            LogError("Failed to establish connection to {0}:{1} with error: {2} ", m_ipAddress, m_Port, e.Message);
         }
     }
 
@@ -57,17 +60,26 @@ public class NetworkCoordinateClient : MonoBehaviour
     { 
         try
         {
+            if (!m_bConnected) return;
+
             byte[] buffer = new byte[2048];
             // Receive the message. This returns number of bytes received
             int bytesReceived = m_Socket.Receive(buffer);
-            Debug.LogFormat("Received {0} bytes from {1}", bytesReceived, m_Socket.RemoteEndPoint.ToString());
+            if (bytesReceived == 0)
+            {
+                m_bConnected = false;
+                LogInfo("Connection with {0}:{1} was closed.", m_ipAddress, m_Port);
+                return;
+            }
+
+            LogInfo("Received {0} bytes from {1}", bytesReceived, m_Socket.RemoteEndPoint.ToString());
             NetworkCoordinate coordinate = JsonUtility.FromJson<NetworkCoordinate>(Encoding.ASCII.GetString(buffer, 0, bytesReceived));
             m_DictLock.EnterWriteLock();
             m_Targets[coordinate.Id] = coordinate.Position;
         }
         catch (Exception e)
         {
-            Debug.LogErrorFormat("Failed to receive data: {0}", e.ToString());
+            LogError("Failed to receive data: {0}", e.ToString());
         }
         finally
         {
@@ -102,5 +114,17 @@ public class NetworkCoordinateClient : MonoBehaviour
         {
             m_DictLock.ExitReadLock();
         }
+    }
+
+    // Prepends this script's name to the log output to facilitate filtering
+    private void LogInfo(string format, params object[] args)
+    {
+        Debug.LogFormat("{0}: {1}", GetType().ToString(), string.Format(format, args));
+    }
+
+    // Prepends this script's name to the log output to facilitate filtering
+    private void LogError(string format, params object[] args)
+    {
+        Debug.LogErrorFormat("{0}: {1}", GetType().ToString(), string.Format(format, args));
     }
 }
