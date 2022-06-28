@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class OtherPlayerBehaviour : MonoBehaviour
 {
+    [SerializeField] int index;
 
     private Vector3 getPosition()
     {
         //interface with transmission here
-        return Vector3.left * (Time.realtimeSinceStartup % 3) + this.transform.parent.position;
+        Dictionary<int, Vector3> targets = this.transform.parent.GetComponent<NetworkCoordinateClient>().getTargets();  
+        return targets.GetValueOrDefault(index, Vector3.left * (Time.realtimeSinceStartup % 3))+ this.transform.parent.position;
     }
 
     // Start is called before the first frame update
