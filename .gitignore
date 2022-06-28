@@ -61,3 +61,5 @@ crashlytics-build.properties
 # User settings
 /UserSettings/Layouts/default-2021.dwlt
 
+# Large build related folder
+/ARWallhackApp_BackUpThisFolder_ButDontShipItWithYourGame/
