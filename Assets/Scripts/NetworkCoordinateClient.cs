@@ -3,19 +3,34 @@ using System.Net.Sockets;
 using System.Net;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading;
 
 public class NetworkCoordinateClient : MonoBehaviour
 {
+    [Serializable]
+    private class NetworkCoordinate
+    {
+        public int Id { get; }
+        public Vector3 Position { get; }
+    }
+
     [SerializeField]
+    [Tooltip("The IP address of the server that the client should connect to, you can run ipconfig in a terminal to find this.")]
     string m_ipAddress;
     [SerializeField]
-    int m_Port;
+    [Tooltip("The port of the server that the client should connect to.")]
+    int m_Port = 20042;
 
     private Socket m_Socket;
+    private Dictionary<int, Vector3> m_Targets;
+    private ReaderWriterLockSlim m_DictLock;
 
     // Start is called before the first frame update
     void Start()
     {
+        m_Targets = new Dictionary<int, Vector3>();
+        m_DictLock = new ReaderWriterLockSlim();
         try
         {
             // Parsing server IPAddress and creating server endpoint
@@ -39,23 +54,53 @@ public class NetworkCoordinateClient : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    { 
         try
         {
-            byte[] messageBuffer = new byte[2048];
+            byte[] buffer = new byte[2048];
             // Receive the message. This returns number of bytes received
-            int byteRecv = m_Socket.Receive(messageBuffer);
-            Debug.LogFormat("Received: {0}", byteRecv);
+            int bytesReceived = m_Socket.Receive(buffer);
+            Debug.LogFormat("Received {0} bytes from {1}", bytesReceived, m_Socket.RemoteEndPoint.ToString());
+            NetworkCoordinate coordinate = JsonUtility.FromJson<NetworkCoordinate>(Encoding.ASCII.GetString(buffer, 0, bytesReceived));
+            m_DictLock.EnterWriteLock();
+            m_Targets[coordinate.Id] = coordinate.Position;
         }
-
         catch (Exception e)
         {
             Debug.LogErrorFormat("Failed to receive data: {0}", e.ToString());
+        }
+        finally
+        {
+            if (m_DictLock.IsWriteLockHeld)
+            {
+                m_DictLock.ExitWriteLock();
+            }
+        }
+    }
+
+    void OnDestroy()
+    {
+        m_DictLock.Dispose();
+        try
+        {
+            m_Socket.Shutdown(SocketShutdown.Both);
+        }
+        finally
+        {
+            m_Socket.Close();
         }
     }
 
     public Dictionary<int, Vector3> GetTargets()
     {
-        return null;
+        m_DictLock.EnterReadLock();
+        try
+        {
+            return m_Targets;
+        }
+        finally
+        {
+            m_DictLock.ExitReadLock();
+        }
     }
 }
