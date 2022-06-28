@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 672017905}
   - component: {fileID: 672017904}
   - component: {fileID: 672017907}
+  - component: {fileID: 672017908}
   m_Layer: 0
   m_Name: OtherPlayer
   m_TagString: Untagged
@@ -233,6 +234,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9a1832fec1c60447a357ebc4688a514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &672017908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 672017902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e91ba53e7909f044bad8b5d41d4b0ff2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ipAddress: 10.200.0.50
+  m_Port: 20042
 --- !u!1 &1155190363
 GameObject:
   m_ObjectHideFlags: 0
@@ -727,7 +742,6 @@ GameObject:
   - component: {fileID: 1953952572}
   - component: {fileID: 1953952574}
   - component: {fileID: 1953952575}
-  - component: {fileID: 1953952576}
   m_Layer: 0
   m_Name: AR Session Origin
   m_TagString: Untagged
@@ -792,17 +806,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TrackedImageManager: {fileID: 1953952574}
---- !u!114 &1953952576
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1953952571}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e91ba53e7909f044bad8b5d41d4b0ff2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ipAddress: 127.0.0.1
-  m_Port: 20042
