@@ -68,14 +68,12 @@ public class NetworkCoordinateClient : MonoBehaviour
             if (bytesReceived == 0)
             {
                 m_bConnected = false;
-                LogInfo("Connection with {0}:{1} was closed.", m_ipAddress, m_Port);
+                LogWarning("Connection with {0}:{1} was closed.", m_ipAddress, m_Port);
                 return;
             }
 
             LogInfo("Received {0} bytes from {1}", bytesReceived, m_Socket.RemoteEndPoint.ToString());
-            NetworkCoordinate coordinate = JsonUtility.FromJson<NetworkCoordinate>(Encoding.ASCII.GetString(buffer, 0, bytesReceived));
-            m_DictLock.EnterWriteLock();
-            m_Targets[coordinate.Id] = coordinate.Position;
+            ReadCoordinatesFromBuffer(buffer, bytesReceived);
         }
         catch (Exception e)
         {
@@ -116,6 +114,15 @@ public class NetworkCoordinateClient : MonoBehaviour
         }
     }
 
+    private void ReadCoordinatesFromBuffer(byte[] buffer, int bytesReceived)
+    {
+        // Get the last (newest) element from the buffer in case there are multiple
+        string jsonString = Encoding.ASCII.GetString(buffer, 0, bytesReceived).Split('\n')[^1];
+        NetworkCoordinate coordinate = JsonUtility.FromJson<NetworkCoordinate>(jsonString);
+        m_DictLock.EnterWriteLock();
+        m_Targets[coordinate.Id] = coordinate.Position;
+    }
+
     // Prepends this script's name to the log output to facilitate filtering
     private void LogInfo(string format, params object[] args)
     {
@@ -126,5 +133,10 @@ public class NetworkCoordinateClient : MonoBehaviour
     private void LogError(string format, params object[] args)
     {
         Debug.LogErrorFormat("{0}: {1}", GetType().ToString(), string.Format(format, args));
+    }
+
+    private void LogWarning(string format, params object[] args)
+    {
+        Debug.LogWarningFormat("{0}: {1}", GetType().ToString(), string.Format(format, args));
     }
 }
