@@ -1,9 +1,9 @@
 {
-    "m_SelectedDeviceId": "86b39222",
+    "m_SelectedDeviceId": "ZY227CFSBC",
     "m_SelectedPackage": {
-        "deviceId": "86b39222",
+        "deviceId": "ZY227CFSBC",
         "name": "com.DefaultCompany.ARWallhack",
-        "processId": 12272,
+        "processId": 28729,
         "exited": false
     },
     "m_SelectedPriority": 0,
@@ -61,6 +61,48 @@
             "name": "com.DefaultCompany.ARWallhack",
             "processId": 12272,
             "exited": false
+        },
+        {
+            "deviceId": "ZY227CFSBC",
+            "name": "com.motorola.launcher3",
+            "processId": 3106,
+            "exited": false
+        },
+        {
+            "deviceId": "ZY227CFSBC",
+            "name": "com.twitter.android",
+            "processId": 19639,
+            "exited": true
+        },
+        {
+            "deviceId": "ZY227CFSBC",
+            "name": "com.DefaultCompany.ARWallhack",
+            "processId": 21794,
+            "exited": true
+        },
+        {
+            "deviceId": "ZY227CFSBC",
+            "name": "com.DefaultCompany.ARWallhack",
+            "processId": 23572,
+            "exited": true
+        },
+        {
+            "deviceId": "ZY227CFSBC",
+            "name": "com.DefaultCompany.ARWallhack",
+            "processId": 25728,
+            "exited": true
+        },
+        {
+            "deviceId": "ZY227CFSBC",
+            "name": "com.instagram.android",
+            "processId": 20693,
+            "exited": false
+        },
+        {
+            "deviceId": "ZY227CFSBC",
+            "name": "com.DefaultCompany.ARWallhack",
+            "processId": 28729,
+            "exited": false
         }
     ],
     "m_Tags": {
@@ -114,7 +156,7 @@
         "Behavior": 0
     },
     "m_FilterOptions": {
-        "m_Filter": "Received",
+        "m_Filter": "",
         "m_UseRegularExpressions": false,
         "m_MatchCase": false
     },

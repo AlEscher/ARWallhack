@@ -7,6 +7,8 @@ public class ImageTrackHandler : MonoBehaviour
 {
     [SerializeField]
     ARTrackedImageManager m_TrackedImageManager;
+    [SerializeField] GameObject prefab;
+    GameObject origin = null;
 
     void OnEnable() => m_TrackedImageManager.trackedImagesChanged += OnChanged;
 
@@ -29,6 +31,7 @@ public class ImageTrackHandler : MonoBehaviour
             updatedImage.size * 100f,
             updatedImage.transform.position,
             updatedImage.transform.rotation));
+            if(!origin)origin = Instantiate(prefab, updatedImage.transform);
         }
 
         foreach (var removedImage in eventArgs.removed)
