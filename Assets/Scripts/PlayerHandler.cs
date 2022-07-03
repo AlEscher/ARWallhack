@@ -21,7 +21,7 @@ public class PlayerHandler : MonoBehaviour
     {
         Debug.Log("Player Handler knows the Origin is sitting at " + originPosition);
         Debug.Log("Player handler knows " + knownPlayers.Count + " Players");
-        //if (originPosition == Vector3.zero) return;
+        if (originPosition == Vector3.zero) return;
         Dictionary<int, Vector3> currentPlayers = this.net.GetTargets();
         while(knownPlayers.Values.Count > currentPlayers.Values.Count)
         {

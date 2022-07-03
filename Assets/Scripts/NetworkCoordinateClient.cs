@@ -106,10 +106,10 @@ public class NetworkCoordinateClient : MonoBehaviour
         m_DictLock.EnterReadLock();
         try
         {
-            Dictionary<int, Vector3> d = new Dictionary<int, Vector3>();
-            d.Add(0, Vector3.zero);
-            return d;
-            //return m_Targets;
+            //Dictionary<int, Vector3> d = new Dictionary<int, Vector3>();
+            //d.Add(0, Vector3.zero);
+            //return d;
+            return m_Targets;
         }
         finally
         {
