@@ -133,7 +133,7 @@ Mat calculate_Stripe(double dx, double dy, MyStrip & st) {
     return Mat(stripeSize, CV_8UC1);
 }
 
-static void getCoordinates(float* coordinates, float* resultMatrix, const cv::Point2f* corners, float markerSize, float xb, float yb, float zb, bool verbose = false){
+void getCoordinates(float* coordinates, float* resultMatrix, const cv::Point2f* corners, float markerSize, float xb, float yb, float zb, bool verbose = false){
     estimateSquarePose(resultMatrix, corners, markerSize);
 
     // This part is only for printing
@@ -149,17 +149,14 @@ static void getCoordinates(float* coordinates, float* resultMatrix, const cv::Po
     }
     }
     cout << "\n";
-    float x, y, z;
     // Translation values in the transformation matrix to calculate the distance between the marker and the camera
-    x = resultMatrix[3];
-    y = resultMatrix[7];
-    z = resultMatrix[11];
-    
-    float rx, ry, rz = 0;
-    
-    ry = -atan(resultMatrix[8]);
-    rx = atan2(resultMatrix[9]/cos(ry) , resultMatrix[10]/cos(ry));
-    rz = atan2(resultMatrix[4]/cos(ry) , resultMatrix[0]/cos(ry));
+    float x = resultMatrix[3];
+    float y = resultMatrix[7];
+    float z = resultMatrix[11];
+
+    float ry = -atan(resultMatrix[8]);
+    float rx = atan2(resultMatrix[9] / cos(ry), resultMatrix[10] / cos(ry));
+    float rz = atan2(resultMatrix[4] / cos(ry), resultMatrix[0] / cos(ry));
     
     float rotMatf[3][3];
     
@@ -172,34 +169,30 @@ static void getCoordinates(float* coordinates, float* resultMatrix, const cv::Po
     Mat rotMat(Size(3,3), CV_32F, rotMatf);
     Mat dist(Size(1,3), CV_32F, distf);
     rotMat = rotMat.inv();
-    
-    float rxb, ryb, rzb = 0;
-    
-    ryb = -atan(rotMatf[2][0]);
-    rxb = atan2(rotMatf[2][1]/cos(ryb) , rotMatf[2][2]/cos(ryb));
-    rzb = atan2(rotMatf[1][0]/cos(ryb) , rotMatf[0][0]/cos(ryb));
-    
-    float b[3];
-    Mat distB(Size(1,3), CV_32F, b);
-    distB = rotMat * dist;
-    b[0] += xb;
-    b[1] += yb;
-    b[2] += zb;
-    
-    if(verbose){
-    cout <<"rotations in x, y , z (A): " << rx << " " << ry << " " << rz << "\n";
-    cout <<"rotations in x, y , z (B): " << rxb << " " << ryb << " " << rzb << "\n";
-    cout <<"coordinates : " << b[0] << " ; " << b[1] << " ; " << b[2] << "\n";
 
-    /* TASK: How can we calculate the distance? -> HINT: E... */
-    cout << "length: " << sqrt(x*x + y*y + z*z) << "\n";
-    cout << "\n";
-    cout << "dist to B: " << sqrt(b[0]*b[0] + b[1]*b[1] + b[2]*b[2]) << "\n";
+    float ryb = -atan(rotMatf[2][0]);
+    float rxb = atan2(rotMatf[2][1] / cos(ryb), rotMatf[2][2] / cos(ryb));
+    float rzb = atan2(rotMatf[1][0] / cos(ryb), rotMatf[0][0] / cos(ryb));
+    
+    Mat distB(Size(1,3), CV_32F, coordinates);
+    distB = rotMat * dist;
+    coordinates[0] += xb;
+    coordinates[1] += yb;
+    coordinates[2] += zb;
+    
+    if(verbose) {
+	    cout <<"rotations in x, y , z (A): " << rx << " " << ry << " " << rz << "\n";
+	    cout <<"rotations in x, y , z (B): " << rxb << " " << ryb << " " << rzb << "\n";
+	    cout <<"coordinates : " << coordinates[0] << " ; " << coordinates[1] << " ; " << coordinates[2] << "\n";
+
+	    /* TASK: How can we calculate the distance? -> HINT: E... */
+	    cout << "length: " << sqrt(x*x + y*y + z*z) << "\n";
+	    cout << "\n";
+	    cout << "dist to B: " << sqrt(coordinates[0]* coordinates[0] + coordinates[1]* coordinates[1] + coordinates[2]* coordinates[2]) << "\n";
     }
-    coordinates = b;
 }
 
-static void contourToMarker(Point2f* cornersR, contour_vector_t &contours, Mat &imgFiltered, Mat &grayScale, int k, bool isFirstMarker, bool isFirstStripe){
+void contourToMarker(Point2f* corners, contour_vector_t &contours, Mat &imgFiltered, Mat &grayScale, int k, bool isFirstMarker, bool isFirstStripe){
     // --- Process Contour ---
 
     contour_t approx_contour;
@@ -209,26 +202,10 @@ static void contourToMarker(Point2f* cornersR, contour_vector_t &contours, Mat &
     // Approximation of old curve, the difference (epsilon) should not be bigger than: perimeter(->arcLength)*0.02
     approxPolyDP(contours[k], approx_contour, arcLength(contours[k], true) * 0.02, true);
 
-#if DRAW_CONTOUR
-    contour_vector_t cov, aprox;
-    cov.emplace_back(contours[k]);
-    aprox.emplace_back(approx_contour);
-    if (approx_contour.size() > 1) {
-        drawContours(imgFiltered, aprox, -1, Scalar(0, 255, 0), 4, 1);
-        drawContours(imgFiltered, cov, -1, Scalar(255, 0, 0), 4, 1);
-        return;
-    }
-#endif // DRAW_CONTOUR
-
     Scalar QUADRILATERAL_COLOR(0, 0, 255);
     Scalar colour;
     // Convert to a usable rectangle
     Rect r = boundingRect(approx_contour);
-
-#if DRAW_RECTANGLE
-    rectangle(imgFiltered, r, Scalar(0, 0, 255), 4);
-    return;
-#endif //DRAW_RECTANGLE
 
     // 4 Corners -> We color them
     if (approx_contour.size() == 4) {
@@ -379,11 +356,6 @@ static void contourToMarker(Point2f* cornersR, contour_vector_t &contours, Mat &
             if (isnan(pos)) {
                 continue;
             }
-            // Check if there is a solution to the calculation, cool trick
-            /*if (pos != pos) {
-                // Value is not a number -> NAN
-                continue;
-            }*/
 
             // Exact point with subpixel accuracy
             Point2d edgeCenter;
@@ -437,9 +409,6 @@ static void contourToMarker(Point2f* cornersR, contour_vector_t &contours, Mat &
         line(imgFiltered, p1, p2, CV_RGB(0, 255, 255), 1, 8, 0);
     }
 
-    // So far we stored the exact line parameters and show the lines in the image now we have to calculate the exact corners
-    Point2f corners[4];
-
     // Calculate the intersection points of both lines
     for (int i = 0; i < 4; ++i) {
         // Go through the corners of the rectangle, 3 -> 0
@@ -456,26 +425,6 @@ static void contourToMarker(Point2f* cornersR, contour_vector_t &contours, Mat &
         // Direction vector
         u0 = lineParams[i]; v0 = lineParams[i + 4];
         u1 = lineParams[j]; v1 = lineParams[j + 4];
-
-        // (x|y) = p + s * vec --> Vector Equation
-        
-        // (x|y) = p + (Ds / D) * vec
-
-        // p0.x = x0; p0.y = y0; vec0.x= u0; vec0.y=v0;
-            // p0 + s0 * vec0 = p1 + s1 * vec1
-            // p0-p1 = vec(-vec0 vec1) * vec(s0 s1)
-
-            // s0 = Ds0 / D (see cramer's rule)
-            // s1 = Ds1 / D (see cramer's rule)
-            // Ds0 = -(x0-x1)v1 + (y0-y1)u1 --> You need to just calculate one, here Ds0
-
-        // (x|y) = (p * D / D) + (Ds * vec / D)
-        // (x|y) = (p * D + Ds * vec) / D
-
-            // x0 * D + Ds0 * u0 / D    or   x1 * D + Ds1 * u1 / D     --> a / D
-            // y0 * D + Ds0 * v0 / D    or   y1 * D + Ds1 * v1 / D     --> b / D
-
-        // (x|y) = a / c;
 
         // Cramer's rule
         // 2 unknown a,b -> Equation system
@@ -597,12 +546,6 @@ static void contourToMarker(Point2f* cornersR, contour_vector_t &contours, Mat &
 
         codes[3] <<= 1;
         codes[3] |= cP[col][3 - row]; // 270∞
-
-        /*cout << "iteration: " << dec << i << endl;
-        cout << "Code 0: " << hex << codes[0] << endl;
-        cout << "Code 1: " << hex << codes[1] << endl;
-        cout << "Code 2: " << hex << codes[2] << endl;
-        cout << "Code 3: " << hex << codes[3] << endl;*/
     }
 
     // Account for symmetry -> One side complete white or black
@@ -695,7 +638,6 @@ int main(int argc, char *argv[]) {
     const string contoursWindow = "Contours";
     const string UI = "Threshold";
     namedWindow(contoursWindow, CV_WINDOW_AUTOSIZE);
-    //namedWindow(stripWindow, CV_WINDOW_AUTOSIZE);
 
     int slider_value = 100;
     createTrackbar(UI, contoursWindow, &slider_value, 255, on_trackbar, &slider_value);
@@ -731,15 +673,14 @@ int main(int argc, char *argv[]) {
         // size is always positive, so unsigned int -> size_t; if you have not initialized the vector it is -1, hence crash
         for (size_t k = 0; k < contours.size(); k++) {
 
-            Point2f* corners;
+            Point2f corners[4];
             contourToMarker(corners, contours, imgFiltered, grayScale, k, isFirstMarker, isFirstStripe);
             // 4x4 -> Rotation | Translation
             //        0  0  0  | 1 -> (Homogene coordinates to combine rotation, translation and scaling)
-            if(corners != nullptr){
-            float resultMatrix[16];
-            // Marker size in meters!
-            float* coordinates;
-            getCoordinates(coordinates, resultMatrix, corners, 0.03, xb, yb, zb, true);
+            if(corners != nullptr) {
+	            float resultMatrix[16];
+	            float coordinates[3];
+	            getCoordinates(coordinates, resultMatrix, corners, 0.03, xb, yb, zb, true);
             }
         }
 
