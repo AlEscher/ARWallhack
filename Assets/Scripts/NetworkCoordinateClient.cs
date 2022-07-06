@@ -106,10 +106,20 @@ public class NetworkCoordinateClient : MonoBehaviour
         m_DictLock.EnterReadLock();
         try
         {
-            //Dictionary<int, Vector3> d = new Dictionary<int, Vector3>();
-            //d.Add(0, Vector3.zero);
-            //return d;
             return m_Targets;
+        }
+        finally
+        {
+            m_DictLock.ExitReadLock();
+        }
+    }
+
+    public Vector3 GetTarget(int idx)
+    {
+        m_DictLock.EnterReadLock();
+        try
+        {
+            return m_Targets[idx];
         }
         finally
         {
@@ -119,11 +129,13 @@ public class NetworkCoordinateClient : MonoBehaviour
 
     private void ReadCoordinatesFromBuffer(byte[] buffer, int bytesReceived)
     {
-        // Get the last (newest) element from the buffer in case there are multiple
-        string jsonString = Encoding.ASCII.GetString(buffer, 0, bytesReceived).Split('\n')[^1];
-        NetworkCoordinate coordinate = JsonUtility.FromJson<NetworkCoordinate>(jsonString);
+        string[] jsonStrings = Encoding.ASCII.GetString(buffer, 0, bytesReceived).Split('\n');
         m_DictLock.EnterWriteLock();
-        m_Targets[coordinate.Id] = coordinate.Position;
+        foreach (string jsonElement in jsonStrings)
+        {
+            NetworkCoordinate coordinate = JsonUtility.FromJson<NetworkCoordinate>(jsonElement);
+            m_Targets[coordinate.Id] = coordinate.Position;
+        }
     }
 
     // Prepends this script's name to the log output to facilitate filtering
