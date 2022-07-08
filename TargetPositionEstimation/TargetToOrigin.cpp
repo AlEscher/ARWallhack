@@ -729,13 +729,14 @@ int main(int argc, char *argv[]) {
             if(corners != NULL) {
 	            // Marker size in meters!
 	            getCoordinates(targets[ind], resultMatrix, corners, 0.03, tb, rb);
-	            codes[ind++] = *code;
+	            codes[ind] = *code;
                 nlohmann::json coordinate;
                 coordinate["id"] = 1;
-                coordinate["position"]["x"] = resultMatrix[3];
-                coordinate["position"]["y"] = resultMatrix[7];
-                coordinate["position"]["z"] = resultMatrix[11];
+                coordinate["position"]["x"] = targets[ind][0];
+                coordinate["position"]["y"] = targets[ind][1];
+                coordinate["position"]["z"] = targets[ind][2];
                 networkCoordinates.push_back(coordinate);
+                ind++;
             	
 	            if (ind  == 10) {
                     free(corners);
