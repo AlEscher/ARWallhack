@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <cmath>
+#include <getopt.h>
 #include"PoseEstimation.h"
 
 using namespace cv;
@@ -133,8 +134,7 @@ Mat calculate_Stripe(double dx, double dy, MyStrip & st) {
     return Mat(stripeSize, CV_8UC1);
 }
 
-static void getCoordinates(float* coordinates, float* resultMatrix, cv::Point2f* corners, float markerSize, float xb, float yb, float zb, bool verbose = false){
-    cout << "--------" << corners[0] << endl;
+static void getCoordinates(float* coordinates, float* resultMatrix, cv::Point2f* corners, float markerSize, float* tb, float* rb, bool verbose = false){
     estimateSquarePose(resultMatrix, corners, markerSize);
 
     // This part is only for printing
@@ -161,7 +161,7 @@ static void getCoordinates(float* coordinates, float* resultMatrix, cv::Point2f*
     ry = -atan(resultMatrix[8]);
     rx = atan2(resultMatrix[9]/cos(ry) , resultMatrix[10]/cos(ry));
     rz = atan2(resultMatrix[4]/cos(ry) , resultMatrix[0]/cos(ry));
-    
+    /*
     float rotMatf[3][3];
     
     for (int i = 0; i < 3; i++) {
@@ -169,38 +169,48 @@ static void getCoordinates(float* coordinates, float* resultMatrix, cv::Point2f*
             rotMatf[i][n] = resultMatrix[(4*i) + n];
         }
     }
-    float distf[3] = {x,y,z};
     Mat rotMat(Size(3,3), CV_32F, rotMatf);
-    Mat dist(Size(1,3), CV_32F, distf);
-    rotMat = rotMat.inv();
+    */
+    float rotX[][3] = {{1,0,0},{0,cos(rb[0]),-sin(rb[0])},{0,sin(rb[0]),cos(rb[0])}};
+    float rotY[][3] = {{cos(rb[1]),0,sin(rb[1])},{0,1,0},{-sin(rb[1]),0,cos(rb[1])}};
+    float rotZ[][3]  = {{cos(rb[2]),-sin(rb[2]),0},{sin(rb[2]),cos(rb[2]),0},{0,0,1}};
+    float rotf[3][3];
     
+    Mat rotMatX(Size(3,3), CV_32F, rotX);
+    Mat rotMatY(Size(3,3), CV_32F, rotY);
+    Mat rotMatZ(Size(3,3), CV_32F, rotZ);
+    Mat rot(Size(3,3), CV_32F, rotf);
+    rot = rotMatZ * rotMatY * rotMatX;
+    rot = rot.inv();
+    
+    float distf[3] = {x,y,z};
+    Mat dist(Size(1,3), CV_32F, distf);
+
     float rxb, ryb, rzb = 0;
     
-    ryb = -atan(rotMatf[2][0]);
-    rxb = atan2(rotMatf[2][1]/cos(ryb) , rotMatf[2][2]/cos(ryb));
-    rzb = atan2(rotMatf[1][0]/cos(ryb) , rotMatf[0][0]/cos(ryb));
-    
-    float b[3];
-    Mat distB(Size(1,3), CV_32F, b);
-    distB = rotMat * dist;
-    b[0] += xb;
-    b[1] += yb;
-    b[2] += zb;
+    ryb = -atan(rotf[2][0]);
+    rxb = atan2(rotf[2][1]/cos(ryb) , rotf[2][2]/cos(ryb));
+    rzb = atan2(rotf[1][0]/cos(ryb) , rotf[0][0]/cos(ryb));
+
+    Mat distB(Size(1,3), CV_32F, coordinates);
+    distB = rot * dist;
+    coordinates[0] += tb[0];
+    coordinates[1] += tb[1];
+    coordinates[2] += tb[2];
     
     if(verbose){
     cout <<"rotations in x, y , z (A): " << rx << " " << ry << " " << rz << "\n";
     cout <<"rotations in x, y , z (B): " << rxb << " " << ryb << " " << rzb << "\n";
-    cout <<"coordinates : " << b[0] << " ; " << b[1] << " ; " << b[2] << "\n";
+    cout <<"coordinates : " << coordinates[0] << " ; " << coordinates[1] << " ; " << coordinates[2] << "\n";
 
     /* TASK: How can we calculate the distance? -> HINT: E... */
     cout << "length: " << sqrt(x*x + y*y + z*z) << "\n";
     cout << "\n";
-    cout << "dist to B: " << sqrt(b[0]*b[0] + b[1]*b[1] + b[2]*b[2]) << "\n";
+    cout << "dist to B: " << sqrt(coordinates[0] * coordinates[0] + coordinates[1] * coordinates[1] + coordinates[2] * coordinates[2]) << "\n";
     }
-    coordinates = b;
 }
 
-static void contourToMarker(Point2f** cornersR, contour_vector_t contours, Mat *imgFiltered, Mat *grayScale, int k, bool isFirstMarker, bool isFirstStripe){
+static void contourToMarker(Point2f** cornersR, contour_vector_t contours, Mat *imgFiltered, Mat *grayScale, int k, bool isFirstMarker, bool isFirstStripe, int* codeR){
     // --- Process Contour ---
     Point2f nul;
     nul.x = -1;
@@ -566,7 +576,7 @@ static void contourToMarker(Point2f** cornersR, contour_vector_t contours, Mat *
     }
 
     if (code < 0) {
-        cornersR = nullptr;
+        *cornersR = nullptr;
         return;
     }
 
@@ -614,7 +624,7 @@ static void contourToMarker(Point2f** cornersR, contour_vector_t contours, Mat *
 
     // Account for symmetry -> One side complete white or black
     if ((codes[0] == 0) || (codes[0] == 0xffff)) {
-        cornersR = nullptr;
+        *cornersR = nullptr;
         return;
     }
 
@@ -628,9 +638,9 @@ static void contourToMarker(Point2f** cornersR, contour_vector_t contours, Mat *
             angle = i;
         }
     }
-
+    //cout << "code: " << code << "\n";
     // Print ID
-    printf("Found: %04x\n", code);
+    //printf("Found: %04x\n", code);
 
     // Show the first detected marker in the image
     if (isFirstMarker) {
@@ -658,30 +668,56 @@ static void contourToMarker(Point2f** cornersR, contour_vector_t contours, Mat *
         // Here you have to use your own camera resolution (y) * 0.5
         corners[i].y = -corners[i].y + 360;
     }
-   
-    cout << "successsss " << cornersR[0]  << " " << cornersR[1] << " " << cornersR[2] << " " << cornersR[3] << endl;
+    *codeR = code;
 }
 
 
 int main(int argc, char *argv[]) {
-    float xb,  yb, zb = 0;
-    switch (argc) {
-        case 4:
-            xb = atof(argv[1]);
-            yb = atof(argv[2]);
-            zb = atof(argv[3]);
-            break;
-        case 3:
-            xb = atof(argv[1]);
-            yb = atof(argv[2]);
-            break;
-        case 2:
-            xb = atof(argv[1]);
-            break;
-        default:
-            break;
-    }
+    float tb[] = {0,0,0};
+    float rb[] = {0,0,0};
     
+    char opt;
+    while((opt = getopt(argc, argv, "t:r:h")) != -1){
+        switch (opt) {
+            case 't': {
+                int offs = 0;
+                for(int i = 0; i < 3; i++){
+                    tb[i] = atof(optarg + offs);
+                    while(*(optarg + offs) != ',' && i < 2){
+                        if(*(optarg + offs) == '\0'){
+                            cout << "use -h to see usage";
+                            return -1;
+                        }
+                        offs++;
+                    }
+                    offs++;
+                }
+            }
+                break;
+            case 'r': {
+                int offs = 0;
+                for(int i = 0; i < 3; i++){
+                    rb[i] = atof(optarg + offs);
+                    while(rb[i] >= 3.14159265359)
+                        rb[i] -= 3.14159265359;
+                    while(*(optarg + offs) != ',' && i < 2){
+                        if(*(optarg + offs) == '\0'){
+                            cout << "use -h to see usage";
+                            return -1;
+                        }
+                        offs++;
+                    }
+                    offs++;
+                }
+            }
+                break;
+            case 'h':
+                cout << "use -t xt,yt,zt to pass camera coortdinates\nuse -r xr,yr,zr to pass rotation\nuse -h for help";
+                return 0;
+            default:
+                break;
+        }
+    }
     Mat frame;
     VideoCapture cap(1);
 
@@ -718,9 +754,11 @@ int main(int argc, char *argv[]) {
     resizeWindow(kWinName4, 120, 120);
 
     Mat imgFiltered;
-
+    float targets[10][3];
+    int codes[10];
+    int ind = 0;
     while (cap.read(frame)) {
-
+        ind = 0;
         // --- Process Frame ---
 
         Mat grayScale;
@@ -739,19 +777,28 @@ int main(int argc, char *argv[]) {
 
         // size is always positive, so unsigned int -> size_t; if you have not initialized the vector it is -1, hence crash
         for (size_t k = 0; k < contours.size(); k++) {
-
             Point2f* corners = (Point2f*)malloc(4 * sizeof(Point2f));
-            contourToMarker(&corners, contours, &imgFiltered, &grayScale, k, isFirstMarker, isFirstStripe);
+            int* code  = (int*)malloc(sizeof(int));
+            float* resultMatrix = (float*)malloc(16 * sizeof(float));
+            contourToMarker(&corners, contours, &imgFiltered, &grayScale, k, isFirstMarker, isFirstStripe, code);
             // 4x4 -> Rotation | Translation
             //        0  0  0  | 1 -> (Homogene coordinates to combine rotation, translation and scaling)
             if(corners != NULL){
-            float resultMatrix[16];
+            
             // Marker size in meters!
-            float* coordinates;
-            getCoordinates(coordinates, (float*)resultMatrix, (Point2f*)corners, 0.03, xb, yb, zb, true);
+            getCoordinates(targets[ind], (float*)resultMatrix, (Point2f*)corners, 0.03, tb, rb);
+            codes[ind++] = *code;
+                if (ind  == 10){
+                    break;
+                }
             }
+            free(corners);
+            free(code);
+            free(resultMatrix);
         }
 
+        for(int i = 0; i < ind ; i++)
+            cout << "target " << i << ": " << targets[i][0] << ";" << targets[i][1] << ";" << targets[i][2] << " / " << codes[i] << "\n";
         imshow(contoursWindow, imgFiltered);
         isFirstStripe = true;
 
