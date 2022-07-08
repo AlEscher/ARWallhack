@@ -717,6 +717,7 @@ int main(int argc, char *argv[]) {
 
         //drawContours(imgFiltered, contours, -1, Scalar(0, 255, 0), 4, 1);
 
+        auto networkCoordinates = nlohmann::json::array();
         // size is always positive, so unsigned int -> size_t; if you have not initialized the vector it is -1, hence crash
         for (size_t k = 0; k < contours.size(); k++) {
             Point2f* corners = (Point2f*)malloc(4 * sizeof(Point2f));
@@ -729,6 +730,13 @@ int main(int argc, char *argv[]) {
 	            // Marker size in meters!
 	            getCoordinates(targets[ind], resultMatrix, corners, 0.03, tb, rb);
 	            codes[ind++] = *code;
+                nlohmann::json coordinate;
+                coordinate["id"] = 1;
+                coordinate["position"]["x"] = resultMatrix[3];
+                coordinate["position"]["y"] = resultMatrix[7];
+                coordinate["position"]["z"] = resultMatrix[11];
+                networkCoordinates.push_back(coordinate);
+            	
 	            if (ind  == 10) {
                     free(corners);
                     free(code);
@@ -740,6 +748,8 @@ int main(int argc, char *argv[]) {
             free(code);
             free(resultMatrix);
         }
+
+        std::string jsonString = networkCoordinates.dump();
 
         for(int i = 0; i < ind ; i++)
             cout << "target " << i << ": " << targets[i][0] << ";" << targets[i][1] << ";" << targets[i][2] << " / " << codes[i] << "\n";
