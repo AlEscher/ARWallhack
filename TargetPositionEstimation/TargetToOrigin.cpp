@@ -7,6 +7,7 @@
 #include <cmath>
 #include <getopt.h>
 #include"PoseEstimation.h"
+#include "json.hpp"
 
 using namespace cv;
 using namespace std;
@@ -729,6 +730,9 @@ int main(int argc, char *argv[]) {
 	            getCoordinates(targets[ind], resultMatrix, corners, 0.03, tb, rb);
 	            codes[ind++] = *code;
 	            if (ind  == 10) {
+                    free(corners);
+                    free(code);
+                    free(resultMatrix);
 	                break;
 	            }
             }
