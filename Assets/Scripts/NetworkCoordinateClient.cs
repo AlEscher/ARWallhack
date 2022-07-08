@@ -133,8 +133,11 @@ public class NetworkCoordinateClient : MonoBehaviour
         m_DictLock.EnterWriteLock();
         foreach (string jsonElement in jsonStrings)
         {
-            NetworkCoordinate coordinate = JsonUtility.FromJson<NetworkCoordinate>(jsonElement);
-            m_Targets[coordinate.Id] = coordinate.Position;
+            NetworkCoordinate[] coordinates = JsonUtility.FromJson<NetworkCoordinate[]>(jsonElement);
+            foreach (NetworkCoordinate coordinate in coordinates)
+            {
+                m_Targets[coordinate.Id] = coordinate.Position;
+            }
         }
     }
 
