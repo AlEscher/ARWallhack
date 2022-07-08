@@ -1,13 +1,18 @@
 #include<opencv2/opencv.hpp>
 #include<iostream>
-#include<sys/socket.h>
 #include<string.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <cmath>
-#include <getopt.h>
 #include"PoseEstimation.h"
 #include "json.hpp"
+#include "AsyncCommunicationServer.h"
+// getopt is a POSIX function thus not available on Windows. 
+// For Windows plebs like me I needed some stolen recompiled c version of getops :D
+#if defined(_WIN32)
+#include "Win_Getopt.h"
+#else
+#include <getopt.h>
+#endif
+
 
 using namespace cv;
 using namespace std;
@@ -49,6 +54,9 @@ Mat videoStreamFrameOutput;
 const string stripWindow = "Strip Window";
 
 const std::string kWinName4 = "Exercise 4 - Marker";
+
+// JSON String that is sent to all Clients
+std::string POS_MESSAGE;
 
 // Added in sheet 4 - Start *****************************************************************
 
@@ -624,6 +632,7 @@ int main(int argc, char *argv[]) {
     float tb[] = {0,0,0};
     float rb[] = {0,0,0};
     
+    
     char opt;
     while((opt = getopt(argc, argv, "t:r:h")) != -1){
         switch (opt) {
@@ -666,8 +675,17 @@ int main(int argc, char *argv[]) {
                 break;
         }
     }
+    
+
+    // setup server acceptor loop in own thread
+    boost::asio::io_context io_context;
+    tcp_server server(io_context);
+    std::thread my_thread([&]() { io_context.run(); });
+
+
+
     Mat frame;
-    VideoCapture cap(1);
+    VideoCapture cap(0);
 
     const string streamWindow = "Stream";
 
@@ -750,7 +768,10 @@ int main(int argc, char *argv[]) {
             free(resultMatrix);
         }
 
+        // sending JSON String to all Clients
         std::string jsonString = networkCoordinates.dump();
+        POS_MESSAGE = jsonString;
+        server.send_to_clients(POS_MESSAGE);
 
         for(int i = 0; i < ind ; i++)
             cout << "target " << i << ": " << targets[i][0] << ";" << targets[i][1] << ";" << targets[i][2] << " / " << codes[i] << "\n";
@@ -763,6 +784,6 @@ int main(int argc, char *argv[]) {
             break;
         }
     }
-
+    my_thread.join();
     return 0;
 }
