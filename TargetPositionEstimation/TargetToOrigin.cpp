@@ -749,7 +749,7 @@ int main(int argc, char *argv[]) {
 	            getCoordinates(targets[ind], resultMatrix, corners, 0.03, tb, rb);
 	            codes[ind] = *code;
                 nlohmann::json coordinate;
-                coordinate["id"] = 1;
+                coordinate["id"] = codes[ind];
                 coordinate["position"]["x"] = targets[ind][0];
                 coordinate["position"]["y"] = targets[ind][1];
                 coordinate["position"]["z"] = targets[ind][2];
