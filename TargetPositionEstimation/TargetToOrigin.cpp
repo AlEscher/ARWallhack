@@ -1,6 +1,6 @@
 #include<opencv2/opencv.hpp>
 #include<iostream>
-#include<string.h>
+#include<string>
 #include <cmath>
 #include"PoseEstimation.h"
 #include "json.hpp"
@@ -405,7 +405,6 @@ static void contourToMarker(Point2f** cornersR, contour_vector_t contours, Mat *
                 // The intensity differences on the stripe
                 resize(imagePixelStripe, iplTmp, Size(100, 300));
 
-                imshow(stripWindow, iplTmp);
                 isFirstStripe = false;
             }
         }
@@ -600,7 +599,6 @@ static void contourToMarker(Point2f** cornersR, contour_vector_t contours, Mat *
 
     // Show the first detected marker in the image
     if (isFirstMarker) {
-        imshow(kWinName4, imageMarker);
         isFirstMarker = false;
     }
 
@@ -773,8 +771,6 @@ int main(int argc, char *argv[]) {
         POS_MESSAGE = jsonString;
         server.send_to_clients(POS_MESSAGE);
 
-        for(int i = 0; i < ind ; i++)
-            cout << "target " << i << ": " << targets[i][0] << ";" << targets[i][1] << ";" << targets[i][2] << " / " << codes[i] << "\n";
         imshow(contoursWindow, imgFiltered);
         isFirstStripe = true;
 
