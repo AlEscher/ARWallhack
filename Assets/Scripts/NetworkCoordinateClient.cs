@@ -9,10 +9,23 @@ using System.Threading;
 public class NetworkCoordinateClient : MonoBehaviour
 {
     [Serializable]
+    private class Vector // Serializable Vector class
+    {
+        public float x;
+        public float y;
+        public float z;
+    }
+    [Serializable]
     private class NetworkCoordinate
     {
-        public int Id { get; }
-        public Vector3 Position { get; }
+        public int Id;
+        public Vector Position;
+    }
+
+    [Serializable]
+    private class JsonUtilitySucks // Unity's JSON parser cannot parse arrays, need a wrapper class
+    {
+        public NetworkCoordinate[] coordinates;
     }
 
     [SerializeField]
@@ -129,14 +142,17 @@ public class NetworkCoordinateClient : MonoBehaviour
 
     private void ReadCoordinatesFromBuffer(byte[] buffer, int bytesReceived)
     {
-        string[] jsonStrings = Encoding.ASCII.GetString(buffer, 0, bytesReceived).Split('\n');
+        string bufferString = Encoding.ASCII.GetString(buffer, 0, bytesReceived);
+        LogInfo("Received string: {0}", bufferString);
+        string[] jsonStrings = bufferString.Split('\n');
         m_DictLock.EnterWriteLock();
         foreach (string jsonElement in jsonStrings)
         {
-            NetworkCoordinate[] coordinates = JsonUtility.FromJson<NetworkCoordinate[]>(jsonElement);
+            string fixedJsonString = "{\"Items\":" + jsonElement + "}";
+            NetworkCoordinate[] coordinates = JsonHelper.FromJson<NetworkCoordinate>(fixedJsonString);
             foreach (NetworkCoordinate coordinate in coordinates)
             {
-                m_Targets[coordinate.Id] = coordinate.Position;
+                m_Targets[coordinate.Id] = new Vector3(coordinate.Position.x, coordinate.Position.y, coordinate.Position.z);
             }
         }
     }
@@ -156,5 +172,34 @@ public class NetworkCoordinateClient : MonoBehaviour
     private void LogWarning(string format, params object[] args)
     {
         Debug.LogWarningFormat("{0}: {1}", GetType().ToString(), string.Format(format, args));
+    }
+
+    private static class JsonHelper // Unity's JSON parser sucks, so we need a ton of workarounds to parse arrays: https://stackoverflow.com/a/36244111/10536822
+    {
+        public static T[] FromJson<T>(string json)
+        {
+            Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(json);
+            return wrapper.Items;
+        }
+
+        public static string ToJson<T>(T[] array)
+        {
+            Wrapper<T> wrapper = new Wrapper<T>();
+            wrapper.Items = array;
+            return JsonUtility.ToJson(wrapper);
+        }
+
+        public static string ToJson<T>(T[] array, bool prettyPrint)
+        {
+            Wrapper<T> wrapper = new Wrapper<T>();
+            wrapper.Items = array;
+            return JsonUtility.ToJson(wrapper, prettyPrint);
+        }
+
+        [Serializable]
+        private class Wrapper<T>
+        {
+            public T[] Items;
+        }
     }
 }
