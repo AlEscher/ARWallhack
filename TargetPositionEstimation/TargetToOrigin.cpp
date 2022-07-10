@@ -147,18 +147,17 @@ static void getCoordinates(float* coordinates, float* resultMatrix, cv::Point2f*
     estimateSquarePose(resultMatrix, corners, markerSize);
 
     // This part is only for printing
-    if(verbose){
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            cout << setw(6); // Total 6
-            cout << setprecision(4); // Numbers of decimal places = 4 (of the 6)
-            // Again we are going through a matrix which is saved as an array
-            cout << resultMatrix[4 * i + j] << " ";
-        }
-        cout << "\n";
+    if (verbose) {
+	    for (int i = 0; i < 4; ++i) {
+	        for (int j = 0; j < 4; ++j) {
+	            cout << setw(6); // Total 6
+	            cout << setprecision(4); // Numbers of decimal places = 4 (of the 6)
+	            // Again we are going through a matrix which is saved as an array
+	            cout << resultMatrix[4 * i + j] << " ";
+	        }
+	        cout << "\n";
+	    }
     }
-    }
-    cout << "\n";
     float x, y, z;
     // Translation values in the transformation matrix to calculate the distance between the marker and the camera
     x = resultMatrix[3];
@@ -198,15 +197,15 @@ static void getCoordinates(float* coordinates, float* resultMatrix, cv::Point2f*
     coordinates[1] += tb[1];
     coordinates[2] += tb[2];
     
-    if(verbose){
-    cout <<"rotations in x, y , z (A): " << rx << " " << ry << " " << rz << "\n";
-    cout <<"rotations in x, y , z (B): " << rxb << " " << ryb << " " << rzb << "\n";
-    cout <<"coordinates : " << coordinates[0] << " ; " << coordinates[1] << " ; " << coordinates[2] << "\n";
+    if (verbose) {
+	    cout <<"rotations in x, y , z (A): " << rx << " " << ry << " " << rz << "\n";
+	    cout <<"rotations in x, y , z (B): " << rxb << " " << ryb << " " << rzb << "\n";
+	    cout <<"coordinates : " << coordinates[0] << " ; " << coordinates[1] << " ; " << coordinates[2] << "\n";
 
-    /* TASK: How can we calculate the distance? -> HINT: E... */
-    cout << "length: " << sqrt(x*x + y*y + z*z) << "\n";
-    cout << "\n";
-    cout << "dist to B: " << sqrt(coordinates[0] * coordinates[0] + coordinates[1] * coordinates[1] + coordinates[2] * coordinates[2]) << "\n";
+	    /* TASK: How can we calculate the distance? -> HINT: E... */
+	    cout << "length: " << sqrt(x*x + y*y + z*z) << "\n";
+	    cout << "\n";
+	    cout << "dist to B: " << sqrt(coordinates[0] * coordinates[0] + coordinates[1] * coordinates[1] + coordinates[2] * coordinates[2]) << "\n";
     }
 }
 
@@ -377,11 +376,6 @@ static void contourToMarker(Point2f** cornersR, contour_vector_t contours, Mat *
             if (isnan(pos)) {
                 continue;
             }
-            // Check if there is a solution to the calculation, cool trick
-            /*if (pos != pos) {
-                // Value is not a number -> NAN
-                continue;
-            }*/
 
             // Exact point with subpixel accuracy
             Point2d edgeCenter;
@@ -462,10 +456,6 @@ static void contourToMarker(Point2f** cornersR, contour_vector_t contours, Mat *
         // Calculate the cross product to check if both direction vectors are parallel -> = 0
         // c -> Determinant = 0 -> linear dependent -> the direction vectors are parallel -> No division with 0
         double c = v1 * u0 - v0 * u1;
-        if (fabs(c) < 0.001) {
-            std::cout << "lines parallel" << std::endl;
-            continue;
-        }
 
         // We have checked for parallelism of the direction vectors
         // -> Cramer's rule, now divide through the main determinant
