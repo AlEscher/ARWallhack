@@ -7,6 +7,7 @@ public class PlayerHandler : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     Dictionary<int, GameObject> knownPlayers;
     public static Vector3 originPosition;
+    public static Quaternion originRotation;
     NetworkCoordinateClient net;
 
     // Start is called before the first frame update
@@ -20,9 +21,10 @@ public class PlayerHandler : MonoBehaviour
     void Update()
     {
         Debug.Log("Player Handler knows the Origin is sitting at " + originPosition);
-        Debug.Log("Player handler knows " + knownPlayers.Count + " Players");
+        
         if (originPosition == Vector3.zero) return;
         Dictionary<int, Vector3> currentPlayers = this.net.GetTargets();
+        Debug.Log("Player handler knows " + knownPlayers.Count + " Players and was told there are " + currentPlayers.Count);
         /*while(knownPlayers.Values.Count > currentPlayers.Values.Count)
         {
             knownPlayers.Remove(knownPlayers.Values.Count - 1);
@@ -37,20 +39,21 @@ public class PlayerHandler : MonoBehaviour
         }*/
 
         //update current players
-        foreach(KeyValuePair<int, Vector3> p in currentPlayers)
+        foreach (KeyValuePair<int, Vector3> p in currentPlayers)
         {
             if (!knownPlayers.ContainsKey(p.Key))
             {
                 knownPlayers.Add(p.Key, Instantiate(playerPrefab, Vector3.zero, Quaternion.identity));
             }
 
-            knownPlayers[p.Key].transform.position = p.Value + originPosition;
+            knownPlayers[p.Key].transform.position = (originRotation *  p.Value) + originPosition;
         }
         //remove lost players
         foreach(KeyValuePair<int, GameObject> p in knownPlayers)
         {
             if (!currentPlayers.ContainsKey(p.Key))
             {
+                Debug.Log("LOST ONE PLAYER");
                 Destroy(p.Value);
                 knownPlayers.Remove(p.Key);
             }
