@@ -50,7 +50,7 @@ int main()
 		}
 
 		// Parse JSON into string and send it to all clients with an active connection
-		std::string jsonString = networkCoordinates.dump();
+		std::string jsonString = networkCoordinates.dump() + "\n";
 		POS_MESSAGE = jsonString;
 		server.send_to_clients(POS_MESSAGE);
 		

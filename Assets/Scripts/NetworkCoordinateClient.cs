@@ -22,12 +22,6 @@ public class NetworkCoordinateClient : MonoBehaviour
         public Vector Position;
     }
 
-    [Serializable]
-    private class JsonUtilitySucks // Unity's JSON parser cannot parse arrays, need a wrapper class
-    {
-        public NetworkCoordinate[] coordinates;
-    }
-
     [SerializeField]
     [Tooltip("The IP address of the server that the client should connect to, you can run ipconfig in a terminal to find this.")]
     string m_ipAddress;
@@ -143,16 +137,19 @@ public class NetworkCoordinateClient : MonoBehaviour
     private void ReadCoordinatesFromBuffer(byte[] buffer, int bytesReceived)
     {
         string bufferString = Encoding.ASCII.GetString(buffer, 0, bytesReceived);
+        // Each message is separated with a newline by the server
         string[] jsonStrings = bufferString.Split('\n');
         m_DictLock.EnterWriteLock();
         foreach (string jsonElement in jsonStrings)
         {
+            // Run through the messages we received, parse them into objects and save them
+            LogInfo("Received JSON string: {0}", jsonElement);
             string fixedJsonString = "{\"Items\":" + jsonElement + "}";
             NetworkCoordinate[] coordinates = JsonHelper.FromJson<NetworkCoordinate>(fixedJsonString);
             foreach (NetworkCoordinate coordinate in coordinates)
             {
                 m_Targets[coordinate.Id] = new Vector3(coordinate.Position.x, coordinate.Position.y, coordinate.Position.z);
-                LogInfo("Received {0}", m_Targets[coordinate.Id]);
+                LogInfo("Saved coordinate at: {0}", m_Targets[coordinate.Id]);
             }
         }
     }
