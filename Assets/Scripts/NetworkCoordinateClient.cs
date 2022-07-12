@@ -5,21 +5,15 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Newtonsoft.Json;
 
 public class NetworkCoordinateClient : MonoBehaviour
 {
     [Serializable]
-    private class Vector // Serializable Vector class
-    {
-        public float x;
-        public float y;
-        public float z;
-    }
-    [Serializable]
     private class NetworkCoordinate
     {
         public int Id;
-        public Vector Position;
+        public Vector3 Position;
     }
 
     [SerializeField]
@@ -142,13 +136,16 @@ public class NetworkCoordinateClient : MonoBehaviour
         m_DictLock.EnterWriteLock();
         foreach (string jsonElement in jsonStrings)
         {
+            if (string.IsNullOrEmpty(jsonElement))
+            {
+                continue;
+            }
             // Run through the messages we received, parse them into objects and save them
             LogInfo("Received JSON string: {0}", jsonElement);
-            string fixedJsonString = "{\"Items\":" + jsonElement + "}";
-            NetworkCoordinate[] coordinates = JsonHelper.FromJson<NetworkCoordinate>(fixedJsonString);
+            NetworkCoordinate[] coordinates = JsonConvert.DeserializeObject<NetworkCoordinate[]>(jsonElement);
             foreach (NetworkCoordinate coordinate in coordinates)
             {
-                m_Targets[coordinate.Id] = new Vector3(coordinate.Position.x, coordinate.Position.y, coordinate.Position.z);
+                m_Targets[coordinate.Id] = coordinate.Position;
                 LogInfo("Saved coordinate at: {0}", m_Targets[coordinate.Id]);
             }
         }
@@ -169,34 +166,5 @@ public class NetworkCoordinateClient : MonoBehaviour
     private void LogWarning(string format, params object[] args)
     {
         Debug.LogWarningFormat("{0}: {1}", GetType().ToString(), string.Format(format, args));
-    }
-
-    private static class JsonHelper // Unity's JSON parser sucks, so we need a ton of workarounds to parse arrays: https://stackoverflow.com/a/36244111/10536822
-    {
-        public static T[] FromJson<T>(string json)
-        {
-            Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(json);
-            return wrapper.Items;
-        }
-
-        public static string ToJson<T>(T[] array)
-        {
-            Wrapper<T> wrapper = new Wrapper<T>();
-            wrapper.Items = array;
-            return JsonUtility.ToJson(wrapper);
-        }
-
-        public static string ToJson<T>(T[] array, bool prettyPrint)
-        {
-            Wrapper<T> wrapper = new Wrapper<T>();
-            wrapper.Items = array;
-            return JsonUtility.ToJson(wrapper, prettyPrint);
-        }
-
-        [Serializable]
-        private class Wrapper<T>
-        {
-            public T[] Items;
-        }
     }
 }
