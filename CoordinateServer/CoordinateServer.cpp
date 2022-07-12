@@ -36,21 +36,25 @@ int main()
 		// JSON object to parse
 		auto networkCoordinates = nlohmann::json::array();
 		
-		float* coordinates = AtoB(resultMatrix, rotB, transB);
+		for (auto it = trackedMarkers.begin(); it != trackedMarkers.end(); ++it) {
+		
+			float* coordinates = AtoB(it->second.data(), rotB, transB);
+		
+			// sending JSON String to all Clients
+			nlohmann::json coordinate;
+			coordinate["id"] = it->first;
+			coordinate["position"]["x"] = coordinates[0];
+			coordinate["position"]["y"] = coordinates[1];
+			coordinate["position"]["z"] = coordinates[2];
+			networkCoordinates.push_back(coordinate);
+			free(coordinates);
 
-		// sending JSON String to all Clients
-		nlohmann::json coordinate;
-		coordinate["id"] = 0;
-		coordinate["position"]["x"] = coordinates[0];
-		coordinate["position"]["y"] = coordinates[1];
-		coordinate["position"]["z"] = coordinates[2];
-		networkCoordinates.push_back(coordinate);
-
+		}
 		std::string jsonString = networkCoordinates.dump();
 		POS_MESSAGE = jsonString;
 		server.send_to_clients(POS_MESSAGE);
 
-		free(coordinates);
+		
 		if (cv::waitKey(10) == 27)
 		{
 			break;
