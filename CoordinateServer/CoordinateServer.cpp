@@ -23,11 +23,13 @@ int main()
 	cv::VideoCapture cap;
 	cap.open(0);
 	std::unique_ptr<MarkerTracker> markerTracker = std::make_unique<MarkerTracker>(0.04346, 50, 50);
+	// The rotation and translation component of the fixed 'B' transformation (see scene graph)
 	float rotB[] = { 0.f, 0.f, 0.f };
 	float transB[] = { 0.f, 0.f, 0.f };
 
 	while (cap.read(img_bgr))
 	{
+		// Mapping from Marker ID to pose estimation result matrix
 		std::unordered_map<int, std::array<float, 16>> trackedMarkers;
 		markerTracker->findMarker(img_bgr, trackedMarkers);
 		// JSON object to parse
