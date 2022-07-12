@@ -1,4 +1,3 @@
-#include <iostream>
 #include <iomanip>
 
 #define CV__ENABLE_C_API_CTORS
@@ -43,7 +42,6 @@ int subpixSampleSafe ( const cv::Mat &pSrc, const cv::Point2f &p )
 
 void MarkerTracker::init()
 {
-	std::cout << "Startup\n";
 	cv::namedWindow(kWinName1, CV_WINDOW_AUTOSIZE);
     cv::namedWindow(kWinName2, CV_WINDOW_AUTOSIZE);
 	cv::namedWindow(kWinName3, CV_WINDOW_AUTOSIZE);
@@ -68,7 +66,6 @@ void MarkerTracker::cleanup()
 	cv::destroyWindow (kWinName2);
 	cv::destroyWindow (kWinName3);
 	cv::destroyWindow (kWinName4);
-	std::cout << "Finished\n";
 }
 
 void MarkerTracker::findMarker( cv::Mat &img_bgr, float resultMatrix[16] )
@@ -309,7 +306,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, float resultMatrix[16] )
 
 				if ( fabs(c) < 0.001 ) //lines parallel?
 				{
-					std::cout << "lines parallel" << std::endl;
 					continue;
 				}
 
@@ -415,8 +411,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, float resultMatrix[16] )
 				}
 			}
 
-			printf ("Found: %04x\n", code);
-
 			if ( isFirstMarker )
 			{
 				cv::imshow ( kWinName4, iplMarker );
@@ -440,23 +434,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, float resultMatrix[16] )
 			
 
 			estimateSquarePose( resultMatrix, (cv::Point2f*)corners, kMarkerSize );
-
-			//this part is only for printing
-			for (int i = 0; i<4; ++i) {
-				for (int j = 0; j<4; ++j) {
-					std::cout << std::setw(6);
-					std::cout << std::setprecision(4);
-					std::cout << resultMatrix[4*i+j] << " ";
-				}
-				std::cout << "\n";
-			}
-			std::cout << "\n";
-			float x,y,z;
-			x = resultMatrix[3];
-			y = resultMatrix[7];
-			z = resultMatrix[11];
-			std::cout << "length: " << sqrt(x*x+y*y+z*z) << "\n";
-			std::cout << "\n";
 		} // end of loop over contours
 
 		cv::imshow(kWinName1, img_bgr);
