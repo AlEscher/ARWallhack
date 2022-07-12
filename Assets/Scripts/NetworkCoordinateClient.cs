@@ -134,6 +134,7 @@ public class NetworkCoordinateClient : MonoBehaviour
         // Each message is separated with a newline by the server
         string[] jsonStrings = bufferString.Split('\n');
         m_DictLock.EnterWriteLock();
+        m_Targets.Clear();
         foreach (string jsonElement in jsonStrings)
         {
             if (string.IsNullOrEmpty(jsonElement))
@@ -152,7 +153,7 @@ public class NetworkCoordinateClient : MonoBehaviour
         string output = "";
         foreach (KeyValuePair<int, Vector3> kvp in m_Targets)
         {
-            output += string.Format("ID = {0}, Position = {1}", kvp.Key, kvp.Value);
+            output += string.Format("ID = {0}, Position = {1}", kvp.Key.ToString("X4"), kvp.Value);
             output += "\n";
         }
         LogInfo("Saved coordinates: {0}", output);
