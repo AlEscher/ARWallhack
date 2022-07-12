@@ -1,1 +1,2 @@
-Test Readme
+The mobile Unity app uses ARCore for Android to find the origin marker and to further track the movement of the camera.
+Once this common origin is established, the app uses the coordinates the server sent to render the targets.
