@@ -146,9 +146,16 @@ public class NetworkCoordinateClient : MonoBehaviour
             foreach (NetworkCoordinate coordinate in coordinates)
             {
                 m_Targets[coordinate.Id] = coordinate.Position;
-                LogInfo("Saved coordinate at: {0}", m_Targets[coordinate.Id]);
             }
         }
+        // print the dictionary to log
+        string output = "";
+        foreach (KeyValuePair<int, Vector3> kvp in m_Targets)
+        {
+            output += string.Format("ID = {0}, Position = {1}", kvp.Key, kvp.Value);
+            output += "\n";
+        }
+        LogInfo("Saved coordinates: {0}", output);
     }
 
     // Prepends this script's name to the log output to facilitate filtering
