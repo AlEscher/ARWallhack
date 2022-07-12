@@ -19,6 +19,6 @@ public class Origin : MonoBehaviour
     {
         Debug.Log("I am the Origin at " + this.transform.position);
         PlayerHandler.originPosition = this.transform.position;
-        PlayerHandler.originRotation = this.transform.rotation;
+        PlayerHandler.originRotation = this.transform.rotation * Quaternion.EulerAngles(0,90,0);
     }
 }
