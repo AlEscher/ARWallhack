@@ -143,7 +143,6 @@ public class NetworkCoordinateClient : MonoBehaviour
     private void ReadCoordinatesFromBuffer(byte[] buffer, int bytesReceived)
     {
         string bufferString = Encoding.ASCII.GetString(buffer, 0, bytesReceived);
-        LogInfo("Received string: {0}", bufferString);
         string[] jsonStrings = bufferString.Split('\n');
         m_DictLock.EnterWriteLock();
         foreach (string jsonElement in jsonStrings)
@@ -153,6 +152,7 @@ public class NetworkCoordinateClient : MonoBehaviour
             foreach (NetworkCoordinate coordinate in coordinates)
             {
                 m_Targets[coordinate.Id] = new Vector3(coordinate.Position.x, coordinate.Position.y, coordinate.Position.z);
+                LogInfo("Received {0}", m_Targets[coordinate.Id]);
             }
         }
     }

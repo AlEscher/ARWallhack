@@ -31,7 +31,11 @@ public class ImageTrackHandler : MonoBehaviour
             updatedImage.size * 100f,
             updatedImage.transform.position,
             updatedImage.transform.rotation));
-            if(!origin)origin = Instantiate(prefab, updatedImage.transform);
+            if (!origin && updatedImage.trackingState == UnityEngine.XR.ARSubsystems.TrackingState.Tracking)
+            {
+                Debug.Log("Found initial Marker Cube");
+                origin = Instantiate(prefab, updatedImage.transform);
+            }
         }
 
         foreach (var removedImage in eventArgs.removed)
