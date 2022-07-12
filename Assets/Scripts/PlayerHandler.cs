@@ -23,7 +23,7 @@ public class PlayerHandler : MonoBehaviour
         Debug.Log("Player handler knows " + knownPlayers.Count + " Players");
         if (originPosition == Vector3.zero) return;
         Dictionary<int, Vector3> currentPlayers = this.net.GetTargets();
-        while(knownPlayers.Values.Count > currentPlayers.Values.Count)
+        /*while(knownPlayers.Values.Count > currentPlayers.Values.Count)
         {
             knownPlayers.Remove(knownPlayers.Values.Count - 1);
         }
@@ -34,6 +34,26 @@ public class PlayerHandler : MonoBehaviour
         for(int i = 0; i < knownPlayers.Count; i++)
         {
             knownPlayers[i].transform.position = currentPlayers[i] + originPosition;
-        }        
+        }*/
+
+        //update current players
+        foreach(KeyValuePair<int, Vector3> p in currentPlayers)
+        {
+            if (!knownPlayers.ContainsKey(p.Key))
+            {
+                knownPlayers.Add(p.Key, Instantiate(playerPrefab, Vector3.zero, Quaternion.identity));
+            }
+
+            knownPlayers[p.Key].transform.position = p.Value + originPosition;
+        }
+        //remove lost players
+        foreach(KeyValuePair<int, GameObject> p in knownPlayers)
+        {
+            if (!currentPlayers.ContainsKey(p.Key))
+            {
+                Destroy(p.Value);
+                knownPlayers.Remove(p.Key);
+            }
+        }
     }
 }
