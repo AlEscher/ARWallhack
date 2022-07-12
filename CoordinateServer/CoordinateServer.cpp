@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <opencv2/highgui.hpp>
 #include <opencv2/videoio.hpp>
 
@@ -10,6 +11,7 @@
 
 // JSON String that is sent to all Clients
 std::string POS_MESSAGE;
+const std::array<int, 6> validMarkerIDs {0x0690, 0x0272, 0x0B44, 0x1228, 0x1C44, 0x005A};
 
 int main()
 {
@@ -38,6 +40,10 @@ int main()
 		// Iterate through all markers that were found in the image and add them to the JSON array
 		for (auto it = trackedMarkers.begin(); it != trackedMarkers.end(); ++it) 
 		{
+			if (std::count(validMarkerIDs.begin(), validMarkerIDs.end(), it->first) < 1)
+			{
+				continue;
+			}
 			// Convert the tracked position into the Marker's coordinate system
 			float* coordinates = AtoB(it->second.data(), rotB, transB);
 		
