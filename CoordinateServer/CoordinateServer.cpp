@@ -13,12 +13,12 @@ std::string POS_MESSAGE;
 
 int main()
 {
-	// setup server acceptor loop in own thread
+	// Setup server acceptor loop in own thread
 	boost::asio::io_context io_context;
 	tcp_server server(io_context);
 	std::thread my_thread([&]() { io_context.run(); });
 
-	// setup openCV marker tracker
+	// Setup OpenCV
 	cv::Mat img_bgr;
 	cv::VideoCapture cap;
 	cap.open(0);
@@ -26,21 +26,20 @@ int main()
 	float rotB[] = { 0.f, 0.f, 0.f };
 	float transB[] = { 0.f, 0.f, 0.f };
 
-
-
 	while (cap.read(img_bgr))
 	{
-		float resultMatrix[16];
 		std::unordered_map<int, std::array<float, 16>> trackedMarkers;
 		markerTracker->findMarker(img_bgr, trackedMarkers);
 		// JSON object to parse
 		auto networkCoordinates = nlohmann::json::array();
-		
-		for (auto it = trackedMarkers.begin(); it != trackedMarkers.end(); ++it) {
-		
+
+		// Iterate through all markers that were found in the image and add them to the JSON array
+		for (auto it = trackedMarkers.begin(); it != trackedMarkers.end(); ++it) 
+		{
+			// Convert the tracked position into the Marker's coordinate system
 			float* coordinates = AtoB(it->second.data(), rotB, transB);
 		
-			// sending JSON String to all Clients
+			// Construct JSON object and add it to the array
 			nlohmann::json coordinate;
 			coordinate["id"] = it->first;
 			coordinate["position"]["x"] = coordinates[0];
@@ -48,12 +47,12 @@ int main()
 			coordinate["position"]["z"] = coordinates[2];
 			networkCoordinates.push_back(coordinate);
 			free(coordinates);
-
 		}
+
+		// Parse JSON into string and send it to all clients with an active connection
 		std::string jsonString = networkCoordinates.dump();
 		POS_MESSAGE = jsonString;
 		server.send_to_clients(POS_MESSAGE);
-
 		
 		if (cv::waitKey(10) == 27)
 		{

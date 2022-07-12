@@ -412,7 +412,7 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::a
 				corners[i].y = -corners[i].y + img_bgr.rows*0.5; //here you have to use your own camera resolution (y) * 0.5
 			}
 			
-			std::array<float, 16> resultMatrix;
+			std::array<float, 16> resultMatrix {};
 			estimateSquarePose( resultMatrix.data(), corners, kMarkerSize );
 			trackedMarkers[code] = resultMatrix;
 		} // end of loop over contours
