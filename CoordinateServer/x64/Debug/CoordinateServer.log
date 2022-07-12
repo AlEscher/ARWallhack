@@ -1,59 +1,8 @@
 ﻿  CoordinateServer.cpp
 C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.h(6,19): warning C4099: 'CvMemStorage': type name first seen using 'struct' now seen using 'class'
 C:\Program Files (x86)\OpenCV\opencv\build\include\opencv2\core\types_c.h(1493): message : see declaration of 'CvMemStorage'
-  MarkerTracker.cpp
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.h(6,19): warning C4099: 'CvMemStorage': type name first seen using 'struct' now seen using 'class'
-C:\Program Files (x86)\OpenCV\opencv\build\include\opencv2\core\types_c.h(1493): message : see declaration of 'CvMemStorage'
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(151,23): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=float
-          ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(152,23): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=float
-          ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(178,62): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=float
-          ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(179,62): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=float
-          ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(247,33): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=float
-          ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(248,33): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=float
-          ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(320,20): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=float
-          ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(321,20): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=float
-          ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(437,37): warning C4244: '-=': conversion from 'double' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=float
-          ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(438,34): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=float
-          ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(442,61): warning C4244: 'argument': conversion from 'const double' to 'float', possible loss of data
-  Generating Code...
+  Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
+  - add -D_WIN32_WINNT=0x0601 to the compiler command line; or
+  - add _WIN32_WINNT=0x0601 to your project's Preprocessor Definitions.
+  Assuming _WIN32_WINNT=0x0601 (i.e. Windows 7 target).
   CoordinateServer.vcxproj -> C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\x64\Debug\CoordinateServer.exe

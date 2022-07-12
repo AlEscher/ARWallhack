@@ -120,6 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,13 +145,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AsyncCommunicationServer.cpp" />
     <ClCompile Include="AtoB.cpp" />
     <ClCompile Include="CoordinateServer.cpp" />
     <ClCompile Include="MarkerTracker.cpp" />
     <ClCompile Include="PoseEstimation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AsyncCommunicationServer.h" />
     <ClInclude Include="AtoB.h" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="MarkerTracker.h" />
     <ClInclude Include="PoseEstimation.h" />
   </ItemGroup>
