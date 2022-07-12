@@ -1,7 +1,9 @@
 #ifndef MARKER_TRACKER_H
 #define MARKER_TRACKER_H
 
+#include <unordered_map>
 #include <opencv/cv.h>
+#include <array>
 
 class CvMemStorage;
 
@@ -29,7 +31,7 @@ public:
 	~MarkerTracker(){
 		cleanup();
 	}
-	void findMarker( cv::Mat &img_bgr, float resultMatrix[16] );
+	void findMarker(cv::Mat& img_bgr, std::unordered_map<int, std::array<float, 16>>& trackedMarkers );
 protected:
 	void init( );
 	void cleanup( );

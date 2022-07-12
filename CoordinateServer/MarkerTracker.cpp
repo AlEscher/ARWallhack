@@ -68,7 +68,7 @@ void MarkerTracker::cleanup()
 	cv::destroyWindow (kWinName4);
 }
 
-void MarkerTracker::findMarker( cv::Mat &img_bgr, float resultMatrix[16] )
+void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::array<float, 16>>& trackedMarkers)
 {
 	bool isFirstStripe = true;
 
@@ -432,8 +432,9 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, float resultMatrix[16] )
 				corners[i].y = -corners[i].y + img_bgr.rows*0.5; //here you have to use your own camera resolution (y) * 0.5
 			}
 			
-
-			estimateSquarePose( resultMatrix, (cv::Point2f*)corners, kMarkerSize );
+			std::array<float, 16> resultMatrix;
+			estimateSquarePose( resultMatrix.data(), corners, kMarkerSize );
+			trackedMarkers[code] = resultMatrix;
 		} // end of loop over contours
 
 		cv::imshow(kWinName1, img_bgr);

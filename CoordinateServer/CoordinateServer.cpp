@@ -31,11 +31,12 @@ int main()
 	while (cap.read(img_bgr))
 	{
 		float resultMatrix[16];
-		markerTracker->findMarker(img_bgr, resultMatrix);
-		float* coordinates = AtoB(resultMatrix, rotB, transB);
-
+		std::unordered_map<int, std::array<float, 16>> trackedMarkers;
+		markerTracker->findMarker(img_bgr, trackedMarkers);
 		// JSON object to parse
 		auto networkCoordinates = nlohmann::json::array();
+		
+		float* coordinates = AtoB(resultMatrix, rotB, transB);
 
 		// sending JSON String to all Clients
 		nlohmann::json coordinate;
