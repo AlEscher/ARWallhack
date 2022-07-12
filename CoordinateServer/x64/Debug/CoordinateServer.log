@@ -1,13 +1,20 @@
-﻿  AtoB.cpp
+﻿  CoordinateServer.cpp
+C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.h(6,19): warning C4099: 'CvMemStorage': type name first seen using 'struct' now seen using 'class'
+C:\Program Files (x86)\OpenCV\opencv\build\include\opencv2\core\types_c.h(1493): message : see declaration of 'CvMemStorage'
   MarkerTracker.cpp
 C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.h(6,19): warning C4099: 'CvMemStorage': type name first seen using 'struct' now seen using 'class'
 C:\Program Files (x86)\OpenCV\opencv\build\include\opencv2\core\types_c.h(1493): message : see declaration of 'CvMemStorage'
+C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(151,23): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
+          with
+          [
+              _Tp=float
+          ]
 C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(152,23): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
           with
           [
               _Tp=float
           ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(153,23): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
+C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(178,62): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
           with
           [
               _Tp=float
@@ -17,7 +24,7 @@ C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(179,62
           [
               _Tp=float
           ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(180,62): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
+C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(247,33): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
           with
           [
               _Tp=float
@@ -27,7 +34,7 @@ C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(248,33
           [
               _Tp=float
           ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(249,33): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
+C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(320,20): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
           with
           [
               _Tp=float
@@ -37,21 +44,16 @@ C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(321,20
           [
               _Tp=float
           ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(322,20): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
+C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(437,37): warning C4244: '-=': conversion from 'double' to '_Tp', possible loss of data
           with
           [
               _Tp=float
           ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(438,37): warning C4244: '-=': conversion from 'double' to '_Tp', possible loss of data
+C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(438,34): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
           with
           [
               _Tp=float
           ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(439,34): warning C4244: '=': conversion from 'double' to '_Tp', possible loss of data
-          with
-          [
-              _Tp=float
-          ]
-C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(443,61): warning C4244: 'argument': conversion from 'const double' to 'float', possible loss of data
+C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\MarkerTracker.cpp(442,61): warning C4244: 'argument': conversion from 'const double' to 'float', possible loss of data
   Generating Code...
   CoordinateServer.vcxproj -> C:\Dev\Cpp\ARMarkerTracking\ARWallhack\CoordinateServer\x64\Debug\CoordinateServer.exe

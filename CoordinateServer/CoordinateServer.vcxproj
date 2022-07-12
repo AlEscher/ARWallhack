@@ -145,6 +145,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AtoB.cpp" />
+    <ClCompile Include="CoordinateServer.cpp" />
     <ClCompile Include="MarkerTracker.cpp" />
     <ClCompile Include="PoseEstimation.cpp" />
   </ItemGroup>

@@ -24,6 +24,9 @@
     <ClCompile Include="AtoB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CoordinateServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MarkerTracker.h">

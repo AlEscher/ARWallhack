@@ -11,7 +11,6 @@
 
 #include "MarkerTracker.h"
 #include "PoseEstimation.h"
-#include "AtoB.h"
 
 
 void trackbarHandler( int pos, void* slider_value ) {
@@ -474,12 +473,4 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, float resultMatrix[16] )
 	} // end of main loop
 
 	cvClearMemStorage ( memStorage );
-
-	int key = cvWaitKey (10);
-	if (key == 27) exit(0);
-}
-
-int main()
-{
-	printf("Hallo\n");
 }
