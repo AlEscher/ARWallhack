@@ -8,9 +8,6 @@
 class CvMemStorage;
 
 const std::string kWinName1 = "Exercise 8 - Original Image";
-const std::string kWinName2 = "Exercise 8 - Converted Image";
-const std::string kWinName3 = "Exercise 8 - Stripe Image";
-const std::string kWinName4 = "Exercise 8 - Marker";
 
 class MarkerTracker{
 public:

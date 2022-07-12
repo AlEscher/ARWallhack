@@ -43,29 +43,13 @@ int subpixSampleSafe ( const cv::Mat &pSrc, const cv::Point2f &p )
 void MarkerTracker::init()
 {
 	cv::namedWindow(kWinName1, CV_WINDOW_AUTOSIZE);
-    cv::namedWindow(kWinName2, CV_WINDOW_AUTOSIZE);
-	cv::namedWindow(kWinName3, CV_WINDOW_AUTOSIZE);
-	cv::namedWindow(kWinName4, 0 );
-	cvResizeWindow("Marker", 120, 120 );
-
-	int max = 255;
-	int slider_value = 100;
-	cv::createTrackbar( "Threshold", kWinName2, &slider_value, 255, trackbarHandler, &slider_value);
-
-	int bw_sileder_value = bw_thresh;
-	cv::createTrackbar( "BW Threshold", kWinName2, &slider_value, 255, bw_trackbarHandler, &bw_sileder_value);
-	
 	memStorage = cvCreateMemStorage();
 }
 
 void MarkerTracker::cleanup() 
 {
 	cvReleaseMemStorage (&memStorage);
-
 	cv::destroyWindow (kWinName1);
-	cv::destroyWindow (kWinName2);
-	cv::destroyWindow (kWinName3);
-	cv::destroyWindow (kWinName4);
 }
 
 void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::array<float, 16>>& trackedMarkers)
@@ -254,9 +238,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::a
 
 					if (isFirstStripe)
 					{
-						cv::Mat iplTmp;
-						cv::resize( iplStripe, iplTmp, cv::Size(100,300) );
-						cv::imshow ( kWinName3, iplTmp );//iplStripe );
 						isFirstStripe = false;
 					}
 
@@ -413,7 +394,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::a
 
 			if ( isFirstMarker )
 			{
-				cv::imshow ( kWinName4, iplMarker );
 				isFirstMarker = false;
 			}
 
@@ -438,7 +418,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::a
 		} // end of loop over contours
 
 		cv::imshow(kWinName1, img_bgr);
-		cv::imshow(kWinName2, img_mono);
 
 
 
