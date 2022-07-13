@@ -27,7 +27,8 @@ int main()
 	std::unique_ptr<MarkerTracker> markerTracker = std::make_unique<MarkerTracker>(0.04346, 50, 50);
 	// The rotation and translation component of the fixed 'B' transformation (see scene graph)
 	float rotB[] = { 0.f, 0.f, 0.f };
-	float transB[] = { 0.f, 0.f, 0.f };
+	// -x = links, x = rechts | -y = unten, y = oben | -z = außen, z = innen
+	float transB[] = { -0.06f, -0.21f, -0.05f };
 
 	while (cap.read(img_bgr))
 	{
@@ -52,7 +53,7 @@ int main()
 			coordinate["id"] = it->first;
 			coordinate["position"]["x"] = coordinates[0];
 			coordinate["position"]["y"] = coordinates[1];
-			coordinate["position"]["z"] = coordinates[2];
+			coordinate["position"]["z"] = coordinates[2]*-1.f;
 			networkCoordinates.push_back(coordinate);
 			free(coordinates);
 		}
