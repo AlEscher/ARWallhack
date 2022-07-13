@@ -7,7 +7,6 @@ public class PlayerHandler : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     Dictionary<int, GameObject> knownPlayers;
     public static Vector3 originPosition;
-    public static Quaternion originRotation;
     NetworkCoordinateClient net;
 
     // Start is called before the first frame update
@@ -46,7 +45,7 @@ public class PlayerHandler : MonoBehaviour
                 knownPlayers.Add(p.Key, Instantiate(playerPrefab, Vector3.zero, Quaternion.identity));
             }
 
-            knownPlayers[p.Key].transform.position = (originRotation *  p.Value) + originPosition;
+            knownPlayers[p.Key].transform.position = p.Value + originPosition;
         }
         //remove lost players
         foreach(KeyValuePair<int, GameObject> p in knownPlayers)
