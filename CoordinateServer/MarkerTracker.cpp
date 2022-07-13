@@ -91,12 +91,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::a
 
 			const cv::Point *rect = (const cv::Point*) result_.data;
 			int npts = result_.rows;
-			// draw the polygon
-			cv::polylines( img_bgr, &rect,&npts, 1,
-				true,           // draw closed contour (i.e. joint end to start)
-				CV_RGB(255,0,0),// colour RGB ordering (here = green)
-				2,              // line thickness
-				CV_AA, 0);
 
 
 			float lineParams[16];
@@ -104,8 +98,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::a
 
 			for (int i=0; i<4; ++i)
 			{
-				cv::circle (img_bgr, rect[i], 3, CV_RGB(0,255,0), -1);
-
 				double dx = (double)(rect[(i+1)%4].x-rect[i].x)/7.0;
 				double dy = (double)(rect[(i+1)%4].y-rect[i].y)/7.0;
 
@@ -148,7 +140,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::a
 					cv::Point p;
 					p.x = (int)px;
 					p.y = (int)py;
-					cv::circle ( img_bgr, p, 2, CV_RGB(0,0,255), -1);
 
 					for ( int m = -1; m <= 1; ++m )
 					{
@@ -162,11 +153,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::a
 							cv::Point p2;
 							p2.x = (int)subPixel.x;
 							p2.y = (int)subPixel.y;
-
-							if (isFirstStripe)
-								cv::circle ( img_bgr, p2, 1, CV_RGB(255,0,255), -1);
-							else
-								cv::circle ( img_bgr, p2, 1, CV_RGB(0,255,255), -1);
 
 							int pixel = subpixSampleSafe (img_gray, subPixel);
 
@@ -231,7 +217,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::a
 					cv::Point p_tmp;
 					p_tmp.x = (int)edgeCenter.x;
 					p_tmp.y = (int)edgeCenter.y;
-					cv::circle ( img_bgr, p_tmp, 1, CV_RGB(0,0,255), -1);
 
 					points[j-1].x = edgeCenter.x;
 					points[j-1].y = edgeCenter.y;
@@ -256,9 +241,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::a
 				cv::Point p2;
 				p2.x = (int)lineParams[8+i] + (int)(50.0*lineParams[i]);
 				p2.y = (int)lineParams[12+i] + (int)(50.0*lineParams[4+i]);
-
-				cv::line ( img_bgr, p, p2, CV_RGB(0,255,255), 1, 8, 0);
-
 			} // end of loop over the 4 edges
 
 			// so far we stored the exact line parameters and show the lines in the image
@@ -299,8 +281,6 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::a
 				cv::Point p;
 				p.x = (int)corners[i].x;
 				p.y = (int)corners[i].y;
-
-				cv::circle ( img_bgr, p, 5, CV_RGB(255,255,0), -1);
 			} //finished the calculation of the exact corners
 
 			cv::Point2f targetCorners[4];
@@ -395,6 +375,14 @@ void MarkerTracker::findMarker( cv::Mat &img_bgr, std::unordered_map<int, std::a
 			if ( isFirstMarker )
 			{
 				isFirstMarker = false;
+			}
+
+			for (int i = 0; i < 4; i++)
+			{
+				cv::Point p;
+				p.x = (int)corners[i].x;
+				p.y = (int)corners[i].y;
+				cv::circle(img_bgr, p, 5, CV_RGB(255, 255, 0), -1);
 			}
 
 			//correct the order of the corners
