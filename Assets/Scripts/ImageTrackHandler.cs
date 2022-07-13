@@ -36,11 +36,18 @@ public class ImageTrackHandler : MonoBehaviour
                 Debug.Log("Found initial Marker Cube");
                 origin = Instantiate(prefab, updatedImage.transform);
             }
+            else if(Time.frameCount % 100 == 0)
+            {
+                Debug.Log("reassigned with a difference of " + (origin.transform.position - updatedImage.transform.position).magnitude);
+                origin.transform.position = updatedImage.transform.position;
+                origin.transform.rotation = updatedImage.transform.rotation;
+            }
         }
 
         foreach (var removedImage in eventArgs.removed)
         {
             Debug.Log("Lost " + removedImage.name);
+            Destroy(origin);
         }
     }
 
